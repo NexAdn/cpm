@@ -18,18 +18,25 @@
 -- User specific configuration
 local tConfig = {
 	-- Server URL to connect to
-	aPackageServer = "rawgithub.com",
+	aPackageServer = "https://raw.githubusercontent.com",
 	-- Path to main repository directory
-	sPackageDirectory = "/nexadn/cpmcontent"
+	sPackageDirectory = "/nexadn/cpmcontent/master"
 }
 
 -- Static configuration (DO NOT CHANGE)
 local tStatic = {
-	sVersion = "0.0.1"
+	sVersion = "0.0.1",
+    
+    sPackagesFile       = "/packages",
+    sDependenciesFile   = "/dependencies",
+    sVersionFile        = "/version",
+    sMainLua            = "/main.lua"
 }
 
 local tMsg = {
-	usageMessage = "Syntax: cpm install [package]\n        cpm update";
+	usageMessage = "Syntax: cpm install [package]\n        cpm update",
+    wrongURL = "Wrong URL",
+    generalError = "Unkown error occured!"
 }
 
 local tData = {
@@ -39,12 +46,46 @@ local tData = {
 local tArgs = { ... }
 
 function fetchArgs()
-	if #tArgs != 3 then
-		textutils.slowPrint(
+	if #tArgs <2 then
+		textutils.slowPrint(tMsg.usageMessage);
 	else
-
+        if tArgs[1] == "update" then
+            cpmUpdate()
+        elseif tArgs[1] == "install" then
+            cpmInstall()
+        end
 	end
 end
 
+function checkURL(sURL)
+    if http.checkURL() == false then
+        print(tMsg.wrongURL)
+        exit 1
+    end
+    return true
+end
 
+function cpmUpdate()
+    local sListURL = tConfig.aPackageServer .. tConfig.sPackageDirectory .. tStatic.sPackagesFile
+    if checkUrl() then
+        local tResPkglist = http.get(sListURL)
+        if tResPkglist.getResponseCode() == 200 then
+            local tFileList = {}
+            local i = 0
+            local cont = true
+            while cont do
+                i = i + 1
+                tFileList[i] = tResPkglist.readLine()
+                if tFileList[i] == nil then
+                    cont = false
+                end
+            end
+        else
+            print(tMsg.generalError)
+        end
+    end
+end
 
+function cpmInstall()
+    
+end
