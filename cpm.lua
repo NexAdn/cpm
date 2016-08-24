@@ -17,7 +17,10 @@
 
 -- User specific configuration
 local tConfig = {
-
+	-- Server URL to connect to
+	aPackageServer = "rawgithub.com",
+	-- Path to main repository directory
+	sPackageDirectory = "/nexadn/cpmcontent"
 }
 
 -- Static configuration (DO NOT CHANGE)
@@ -25,8 +28,23 @@ local tStatic = {
 	sVersion = "0.0.1"
 }
 
-local tData = {
-
+local tMsg = {
+	usageMessage = "Syntax: cpm install [package]\n        cpm update";
 }
+
+local tData = {
+	
+}
+
+local tArgs = { ... }
+
+function fetchArgs()
+	if #tArgs != 3 then
+		textutils.slowPrint(
+	else
+
+	end
+end
+
 
 
