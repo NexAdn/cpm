@@ -1,0 +1,33 @@
+========================
+= Repository structure =
+========================
+
+REPOSITORY/
+    |
+    +---/packages
+    |
+    +---/package/
+    |
+    +---/package2/
+    |
+    +---/package3/
+    |       |
+    |       +---/dependencies
+    |       |
+    |       +---/version
+    |       |
+    |       +---/main.lua
+    
+packages:
+- line separated (LF) list of all packages in the repository
+    
+dependencies:
+- line separated (LF) list of other packages this package depends on
+- must be in same repository
+
+version:
+- raw version string
+- used to check new updates
+
+main.lua:
+- script/program
