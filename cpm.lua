@@ -25,7 +25,7 @@ local tConfig = {
 
 -- Static configuration (DO NOT CHANGE)
 local tStatic = {
-	sVersion = "0.0.1",
+    sVersion = "0.0.1",
     
     sPackagesFile       = "/packages",
     sDependenciesFile   = "/dependencies",
@@ -40,7 +40,8 @@ local tMsg = {
 }
 
 local tData = {
-	
+    aPackageList = {},
+    aVersionList = {}
 }
 
 local tArgs = { ... }
@@ -50,9 +51,11 @@ function fetchArgs()
 		textutils.slowPrint(tMsg.usageMessage);
 	else
         if tArgs[1] == "update" then
-            cpmUpdate()
+            tData.aPackageList,tData.aVersionList = cpmUpdate()
         elseif tArgs[1] == "install" then
             cpmInstall()
+        elseif tArgs[1] == "upgrade" then
+            cpmUpgrade()
         end
 	end
 end
@@ -80,12 +83,44 @@ function cpmUpdate()
                     cont = false
                 end
             end
+            local tVersionList = {}
+            for k,v in pairs(tFileList) do
+                local res = http.get(tConfig.aPackageServer .. tConfig.sPackageDirectory .. "/" .. v .. tStatic.sVersionFile)
+                if res.getResponseCode() ~= 200 then
+                    print(tMsg.generalError)
+                    return nil,nil
+                end
+                tVersionList[k] = res.readLine()
+            end
+            return tFileList,tVersionList
         else
             print(tMsg.generalError)
         end
     end
 end
 
-function cpmInstall()
+function cpmUpgrade()
+    return 0
+end
+
+function cpmInstall(sPackage)
+    local sURL = tConfig.aPackageServer .. sPackageDirectory .. "/" .. sPackage .. sMainLua
+    local res = http.get(sURL)
     
+    if res.getResponseCode() ~= 200 then
+        print(tMsg.generalError)
+        return -1
+    end
+    
+    local file = fs.open(sPackage, "w")
+    
+    local buf = nil
+    
+    while buf = res.readLine() do
+        file.write(buf)
+    end
+    
+    file.close()
+    
+    return 1
 end
