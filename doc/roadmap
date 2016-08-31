@@ -1,2 +1,10 @@
 0.1:
 - simple download handler
+
+0.2:
+- dependency checking
+- CPM updater
+
+0.3:
+- version checking
+- support for package configuration subdirs
