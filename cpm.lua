@@ -53,7 +53,9 @@ function fetchArgs()
         if tArgs[1] == "update" then
             tData.aPackageList,tData.aVersionList = cpmUpdate()
         elseif tArgs[1] == "install" then
-            cpmInstall()
+            if cpmInstall(tArgs[2]) ~= 1 then
+                print(tMsg.generalError) 
+            end
         elseif tArgs[1] == "upgrade" then
             cpmUpgrade()
         end
@@ -61,16 +63,16 @@ function fetchArgs()
 end
 
 function checkURL(sURL)
-    if http.checkURL() == false then
+    if http.checkURL(sURL) == false then
         print(tMsg.wrongURL)
-        exit 1
+        return false
     end
     return true
 end
 
 function cpmUpdate()
     local sListURL = tConfig.aPackageServer .. tConfig.sPackageDirectory .. tStatic.sPackagesFile
-    if checkUrl() then
+    if checkURL(sListURL) then
         local tResPkglist = http.get(sListURL)
         if tResPkglist.getResponseCode() == 200 then
             local tFileList = {}
@@ -104,7 +106,8 @@ function cpmUpgrade()
 end
 
 function cpmInstall(sPackage)
-    local sURL = tConfig.aPackageServer .. sPackageDirectory .. "/" .. sPackage .. sMainLua
+    tData.aPackageList,tData.aVersionList = cpmUpdate()
+    local sURL = tConfig.aPackageServer .. tConfig.sPackageDirectory .. "/" .. sPackage .. tStatic.sMainLua
     local res = http.get(sURL)
     
     if res.getResponseCode() ~= 200 then
@@ -116,11 +119,25 @@ function cpmInstall(sPackage)
     
     local buf = nil
     
-    while buf = res.readLine() do
-        file.write(buf)
+    while true do
+        buf = res.readLine()
+        if buf ~= nil then
+            file.writeLine(buf)
+        else
+            break
+        end
     end
     
     file.close()
     
     return 1
 end
+
+function main()
+    for k,v in pairs(tArgs) do
+        print(k .. " " ..v)
+    end
+    fetchArgs()
+end
+
+main()
