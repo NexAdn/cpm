@@ -34,9 +34,10 @@ local tStatic = {
 }
 
 local tMsg = {
-	usageMessage = "Syntax: cpm install [package]\n        cpm update",
+    usageMessage = "Syntax: cpm install [package]\n        cpm update",
     wrongURL = "Wrong URL",
-    generalError = "Unkown error occured!"
+    generalError = "Unkown error occured!",
+    installationSuccess = "Installation successful!"
 }
 
 local tData = {
@@ -51,13 +52,17 @@ function fetchArgs()
 		textutils.slowPrint(tMsg.usageMessage);
 	else
         if tArgs[1] == "update" then
-            tData.aPackageList,tData.aVersionList = cpmUpdate()
+            --tData.aPackageList,tData.aVersionList = cpmUpdate()
+            print("Update function has not been properly implemented yet.")
         elseif tArgs[1] == "install" then
             if cpmInstall(tArgs[2]) ~= 1 then
-                print(tMsg.generalError) 
+                print(tMsg.generalError)
+            else
+                print(tMsg.installationSuccess)
             end
         elseif tArgs[1] == "upgrade" then
-            cpmUpgrade()
+            --cpmUpgrade()
+            print("Upgrade function has not been properly implemented yet.")
         end
 	end
 end
@@ -134,9 +139,6 @@ function cpmInstall(sPackage)
 end
 
 function main()
-    for k,v in pairs(tArgs) do
-        print(k .. " " ..v)
-    end
     fetchArgs()
 end
 
