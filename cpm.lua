@@ -71,7 +71,7 @@ function fetchArgs()
                 if buf == nil then
                     break
                 end
-                fs.writeLine(buf)
+                file.writeLine(buf)
             end
             print(tMsg.updateSuccess)
         end
