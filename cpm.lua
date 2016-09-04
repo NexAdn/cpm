@@ -183,7 +183,7 @@ function loadDependencies(sPackage)
 end
 
 function main()
-    textutils.slowPrint("CPM " .. tStatic.sVersion)
+    textutils.slowPrint("CPM v" .. tStatic.sVersion .. "\n")
     --[[for k,v in pairs(tArgs) do
         print(k .. " " ..v)
     end]]
