@@ -4,6 +4,7 @@ This project is currently in beta phase and the official repository doesn't cont
 
 # Install CPM on your ComputerCraft computer
 Our releases will always contain a pastebin which can be used to easily download cpm to a CC computer:
+
     pastebin get Esehqdwn cpm
 
 *If you use custom settings for cpm, feel free to clone the paste and modify the configuration to match your needs.*
