@@ -48,7 +48,7 @@ local tArgs = { ... }
 
 function fetchArgs()
 	if #tArgs <2 then
-		textutils.slowPrint(tMsg.usageMessage);
+		textutils.slowPrint(tMsg.usageMessage)
 	else
         if tArgs[1] == "update" then
             tData.aPackageList,tData.aVersionList = cpmUpdate()
@@ -106,6 +106,9 @@ function cpmUpgrade()
 end
 
 function cpmInstall(sPackage)
+    -- Recursive dependency installation
+    loadDependencies(sPackage)
+    
     local res = downloadFile(tConfig.aPackageServer .. tConfig.sPackageDirectory .. "/" .. sPackage .. tStatic.sMainLua)
     
     if res == nil then
@@ -142,6 +145,22 @@ function downloadFile(sURL)
         return res
     else
         return nil
+    end
+end
+
+function loadDependencies(sPackage)
+    local res = downloadFile( tConfig.aPackageServer .. tConfig.sPackageDirectory .. "/" .. sPackage .. tStatic.sDependenciesFile )
+    
+    local buf = nil
+    
+    while true do
+        buf = res.readLine()
+        
+        if buf == nil or buf == "NULL" then
+            break
+        end
+        
+        cpmInstall(buf)
     end
 end
 
