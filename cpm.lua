@@ -133,6 +133,20 @@ function cpmInstall(sPackage)
     return 1
 end
 
+function downloadFile(sURL)
+    if checkURL(sURL) then
+        local res = http.get(sURL)
+        
+        if res.getResponseCode() ~= 200 then
+            return nil
+        end
+        
+        return res
+    else
+        return nil
+    end
+end
+
 function main()
     for k,v in pairs(tArgs) do
         print(k .. " " ..v)
