@@ -65,7 +65,7 @@ function fetchArgs()
             print(tMsg.generalError)
         else
             local buf = nil
-            local file = fs.open("cpm")
+            local file = fs.open("cpm", "w")
             while true do
                 buf = res.readLine()
                 if buf == nil then
