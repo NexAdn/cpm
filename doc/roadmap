@@ -3,10 +3,9 @@
 
 0.2:
 - dependency checking
-- CPM updater:
-	- official cpm version
-	- customized version from the repository
+- CPM updater from hardcoded URL (https://raw.githubusercontent.com/NexAdn/cpm/master/cpm.lua)
 
 0.3:
+- data directory at /.cpm.d/ containing a list of installed packages and install package versions
 - version checking
 - support for package configuration subdirs
