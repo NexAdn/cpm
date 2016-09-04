@@ -106,11 +106,9 @@ function cpmUpgrade()
 end
 
 function cpmInstall(sPackage)
-    tData.aPackageList,tData.aVersionList = cpmUpdate()
-    local sURL = tConfig.aPackageServer .. tConfig.sPackageDirectory .. "/" .. sPackage .. tStatic.sMainLua
-    local res = http.get(sURL)
+    local res = downloadFile(tConfig.aPackageServer .. tConfig.sPackageDirectory .. "/" .. sPackage .. tStatic.sMainLua)
     
-    if res.getResponseCode() ~= 200 then
+    if res == nil then
         print(tMsg.generalError)
         return -1
     end
@@ -148,6 +146,7 @@ function downloadFile(sURL)
 end
 
 function main()
+    textutils.slowPrint("CPM " .. tStatic.sVersion)
     for k,v in pairs(tArgs) do
         print(k .. " " ..v)
     end
