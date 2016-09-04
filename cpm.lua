@@ -156,7 +156,7 @@ function downloadFile(sURL)
     if checkURL(sURL) then
         local res = http.get(sURL)
         
-        if res.getResponseCode() ~= 200 then
+        if res.getResponseCode() ~= 200 and res.getResponseCode() ~= 304 then
             return nil
         end
         
