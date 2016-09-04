@@ -1,5 +1,7 @@
 -- Copyright (C) 2016 Adrian Schollmeyer
 
+-- INFO: Licenses can be found in the COPYING-Folder.
+--
 -- cpm.lua is part of CPM.
 --
 --  CPM is free software: you can redistribute it and/or modify
@@ -12,8 +14,6 @@
 --  GNU General Public License and the GNU General Public License for more details.
 --  You should have received a copy of the GNU General Public License
 --  along with this program.  If not, see <http://www.gnu.org/licenses/>.
---
---  Licenses can be found in the COPYING-Folder.
 
 -- User specific configuration
 local tConfig = {
@@ -34,10 +34,10 @@ local tStatic = {
 }
 
 local tMsg = {
-    usageMessage = "Syntax: cpm install [package]\n        cpm update",
+	usageMessage = "Syntax: cpm install [package]\n        cpm update\n        cpm cpmupdate",
     wrongURL = "Wrong URL",
     generalError = "Unkown error occured!",
-    installationSuccess = "Installation successful!"
+    updateSuccess = "Successfully updated CPM"
 }
 
 local tData = {
@@ -48,23 +48,37 @@ local tData = {
 local tArgs = { ... }
 
 function fetchArgs()
-	if #tArgs <2 then
-		textutils.slowPrint(tMsg.usageMessage);
-	else
-        if tArgs[1] == "update" then
-            --tData.aPackageList,tData.aVersionList = cpmUpdate()
-            print("Update function has not been properly implemented yet.")
-        elseif tArgs[1] == "install" then
-            if cpmInstall(tArgs[2]) ~= 1 then
-                print(tMsg.generalError)
-            else
-                print(tMsg.installationSuccess)
-            end
-        elseif tArgs[1] == "upgrade" then
-            --cpmUpgrade()
-            print("Upgrade function has not been properly implemented yet.")
+    if tArgs[1] == "update" then
+           tData.aPackageList,tData.aVersionList = cpmUpdate()
+    elseif tArgs[1] == "install" then
+        if #tArgs < 2 then
+            print(tMsg.usageMessage)
         end
-	end
+        if cpmInstall(tArgs[2]) ~= 1 then
+            print(tMsg.generalError) 
+        end
+    elseif tArgs[1] == "upgrade" then
+        cpmUpgrade()
+    elseif tArgs[1] == "cpmupdate" then
+        local res = downloadFile("https://raw.githubusercontent.com/NexAdn/cpm/master/cpm.lua")
+        if res == nil then
+            print(tMsg.generalError)
+        else
+            local buf = nil
+            local file = fs.open("cpm", "w")
+            while true do
+                buf = res.readLine()
+                if buf == nil then
+                    break
+                end
+                file.writeLine(buf)
+            end
+            file.close()
+            print(tMsg.updateSuccess)
+        end
+    else
+        print(tMsg.usageMessage)
+    end
 end
 
 function checkURL(sURL)
@@ -111,11 +125,12 @@ function cpmUpgrade()
 end
 
 function cpmInstall(sPackage)
-    tData.aPackageList,tData.aVersionList = cpmUpdate()
-    local sURL = tConfig.aPackageServer .. tConfig.sPackageDirectory .. "/" .. sPackage .. tStatic.sMainLua
-    local res = http.get(sURL)
+    -- Recursive dependency installation
+    loadDependencies(sPackage)
     
-    if res.getResponseCode() ~= 200 then
+    local res = downloadFile(tConfig.aPackageServer .. tConfig.sPackageDirectory .. "/" .. sPackage .. tStatic.sMainLua)
+    
+    if res == nil then
         print(tMsg.generalError)
         return -1
     end
@@ -138,7 +153,43 @@ function cpmInstall(sPackage)
     return 1
 end
 
+function downloadFile(sURL)
+    if checkURL(sURL) then
+        local res = http.get(sURL)
+        
+        print(res.getResponseCode())
+        
+        if res.getResponseCode() ~= 200 and res.getResponseCode() ~= 304 then
+            return nil
+        end
+        
+        return res
+    else
+        return nil
+    end
+end
+
+function loadDependencies(sPackage)
+    local res = downloadFile( tConfig.aPackageServer .. tConfig.sPackageDirectory .. "/" .. sPackage .. tStatic.sDependenciesFile )
+    
+    local buf = nil
+    
+    while true do
+        buf = res.readLine()
+        
+        if buf == nil or buf == "NULL" then
+            break
+        end
+        
+        cpmInstall(buf)
+    end
+end
+
 function main()
+    textutils.slowPrint("CPM v" .. tStatic.sVersion .. "\n")
+    --[[for k,v in pairs(tArgs) do
+        print(k .. " " ..v)
+    end]]
     fetchArgs()
 end
 

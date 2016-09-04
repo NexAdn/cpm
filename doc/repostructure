@@ -5,6 +5,10 @@
 REPOSITORY/
     |
     +---/packages
+	|
+	+---/cpmversion
+	|
+	+---/cpm.lua
     |
     +---/package/
     |
@@ -20,10 +24,17 @@ REPOSITORY/
     
 packages:
 - line separated (LF) list of all packages in the repository
+
+cpmversion:
+- raw cpm version string
+
+cpm.lua:
+- the repository's customized cpm
     
 dependencies:
 - line separated (LF) list of other packages this package depends on
 - must be in same repository
+- packages without dependencies should insert a NULL in the dependencies file
 
 version:
 - raw version string
