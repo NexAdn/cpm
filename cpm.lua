@@ -36,7 +36,8 @@ local tStatic = {
 local tMsg = {
 	usageMessage = "Syntax: cpm install [package]\n        cpm update",
     wrongURL = "Wrong URL",
-    generalError = "Unkown error occured!"
+    generalError = "Unkown error occured!",
+    updateSuccess = "Successfully updated CPM"
 }
 
 local tData = {
@@ -47,19 +48,34 @@ local tData = {
 local tArgs = { ... }
 
 function fetchArgs()
-	if #tArgs <2 then
-		textutils.slowPrint(tMsg.usageMessage)
-	else
-        if tArgs[1] == "update" then
-            tData.aPackageList,tData.aVersionList = cpmUpdate()
-        elseif tArgs[1] == "install" then
-            if cpmInstall(tArgs[2]) ~= 1 then
-                print(tMsg.generalError) 
-            end
-        elseif tArgs[1] == "upgrade" then
-            cpmUpgrade()
+    if tArgs[1] == "update" then
+           tData.aPackageList,tData.aVersionList = cpmUpdate()
+    elseif tArgs[1] == "install" then
+        if #tArgs < 2 then
+            print(tMsg.usageMessage)
         end
-	end
+        if cpmInstall(tArgs[2]) ~= 1 then
+            print(tMsg.generalError) 
+        end
+    elseif tArgs[1] == "upgrade" then
+        cpmUpgrade()
+    elseif tArgs[1] == "cpmupdate" then
+        local res = downloadFile("https://raw.githubusercontent.com/NexAdn/cpm/master/cpm.lua")
+        if res == nil then
+            print(tMsg.generalError)
+        else
+            local buf = nil
+            local file = fs.open("cpm")
+            while true do
+                buf = res.readLine()
+                if buf == nil then
+                    break
+                end
+                fs.writeLine(buf)
+            end
+            print(tMsg.updateSuccess)
+        end
+    end
 end
 
 function checkURL(sURL)
