@@ -147,9 +147,9 @@ end
 
 function main()
     textutils.slowPrint("CPM " .. tStatic.sVersion)
-    for k,v in pairs(tArgs) do
+    --[[for k,v in pairs(tArgs) do
         print(k .. " " ..v)
-    end
+    end]]
     fetchArgs()
 end
 
