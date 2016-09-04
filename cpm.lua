@@ -73,6 +73,7 @@ function fetchArgs()
                 end
                 file.writeLine(buf)
             end
+            file.close()
             print(tMsg.updateSuccess)
         end
     else
@@ -155,6 +156,8 @@ end
 function downloadFile(sURL)
     if checkURL(sURL) then
         local res = http.get(sURL)
+        
+        print(res.getResponseCode())
         
         if res.getResponseCode() ~= 200 and res.getResponseCode() ~= 304 then
             return nil
