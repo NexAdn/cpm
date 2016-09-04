@@ -75,6 +75,8 @@ function fetchArgs()
             end
             print(tMsg.updateSuccess)
         end
+    else
+        print(tMsg.usageMessage)
     end
 end
 
