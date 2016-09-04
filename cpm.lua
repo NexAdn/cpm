@@ -1,5 +1,7 @@
 -- Copyright (C) 2016 Adrian Schollmeyer
 
+-- INFO: Licenses can be found in the COPYING-Folder.
+--
 -- cpm.lua is part of CPM.
 --
 --  CPM is free software: you can redistribute it and/or modify
@@ -12,8 +14,6 @@
 --  GNU General Public License and the GNU General Public License for more details.
 --  You should have received a copy of the GNU General Public License
 --  along with this program.  If not, see <http://www.gnu.org/licenses/>.
---
---  Licenses can be found in the COPYING-Folder.
 
 -- User specific configuration
 local tConfig = {
