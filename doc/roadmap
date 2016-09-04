@@ -3,7 +3,9 @@
 
 0.2:
 - dependency checking
-- CPM updater
+- CPM updater:
+	- official cpm version
+	- customized version from the repository
 
 0.3:
 - version checking
