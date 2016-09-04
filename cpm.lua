@@ -34,7 +34,7 @@ local tStatic = {
 }
 
 local tMsg = {
-	usageMessage = "Syntax: cpm install [package]\n        cpm update",
+	usageMessage = "Syntax: cpm install [package]\n        cpm update\n        cpm cpmupdate",
     wrongURL = "Wrong URL",
     generalError = "Unkown error occured!",
     updateSuccess = "Successfully updated CPM"
