@@ -2,7 +2,7 @@
 - simple download handler
 
 0.2:
-- dependency checking
+- dependency checking and automatic downloads
 - CPM updater from hardcoded URL (https://raw.githubusercontent.com/NexAdn/cpm/master/cpm.lua)
 
 0.3:
