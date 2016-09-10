@@ -5,6 +5,9 @@ The roadmap is only updated on the development branch.
 - version checking
 - support for package configuration subdirs
 
+0.2.1:
+- console output
+
 0.2:
 - dependency checking and automatic downloads
 - CPM updater from hardcoded URL (https://raw.githubusercontent.com/NexAdn/cpm/master/cpm.lua)
