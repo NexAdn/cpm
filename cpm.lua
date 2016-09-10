@@ -58,26 +58,29 @@ local tData = {
 local tArgs = { ... }
 
 function checkInitial()
-    if fs.isDir(".cpm.d") then
+    if fs.isDir(".cpm.d") and fs.isDir(".cpm.d/install.d/") then
         readPackageLists()
         return 0
     else
         initConfDir()
-        checkInitial()
+        --checkInitial()
+        readPackageLists()
         return 0
     end
 end
 
 -- Initialize .cpm.d --
 function initConfDir()
-    if fs.exists(".cpm.d/plist") == false or fs.isDir(".cpm.d/plist") == true then
-        fs.delete(".cpm.d/plist")
-        fs.delete(".cpm.d/pvlist")
-    end
+    fs.makeDir(".cpm.d/")
+    fs.makeDir(".cpm.d/install.d/")
 end
 
 function readPackageLists()
     print(tMsg.readPackageLists)
+    
+    if fs.exists(".cpm.d/plist") == false or fs.exists(".cpm.d/pvlist") == false then
+        cpmUpdate()
+    end
     
     local plist = fs.open(".cpm.d/plist", "r")
     local pvlist = fs.open(".cpm.d/pvlist", "r")
