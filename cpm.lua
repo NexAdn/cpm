@@ -224,7 +224,7 @@ function cpmUpdate()
                     plist.writeLine(tFileList[it])
                     pvlist.writeLine(tVersionList[it])
                     
-                    print("OK " .. tFileList[it] .. " " tVersionList[it])
+                    print("OK " .. tFileList[it] .. " " .. tVersionList[it])
                     
                     it = it + 1
                 else
