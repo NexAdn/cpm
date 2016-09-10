@@ -1,0 +1,23 @@
+/
+|
++---/cpm
+|
++---/.cpm.d/
+|   |
+|   +---/plist
+|   |
+|   +---/pvlist
+|   |
+|   +---/install.d/
+|   |   |
+|   |   +---/PACKAGENAME
+
+
+cpm             The cpm script
+.cpm.d          The cpm data folder
+plist           The repository's package list
+pvlist          The repository's package version list
+install.d       Data directory containing files for each installed package
+
+PACKAGENAME     Text file named the same as the corresponding package
+                Contains: The raw version string
