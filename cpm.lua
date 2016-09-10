@@ -40,24 +40,119 @@ local tMsg = {
     updateSuccess = "Successfully updated CPM",
     installPackage = "Unpacking ",
     installedPackage = "Unpacked ",
-    done = "Done"
+    done = "Done",
+    packageNotFound = "Couldn't find package",
+    packageUptodate = "Package already up-to-date",
+    readPackageLists = "Reading package lists..."
 }
 
 local tData = {
     aPackageList = {},
-    aVersionList = {}
+    aVersionList = {},
+    installed = {
+        package = {},
+        version = {}
+    }
 }
 
 local tArgs = { ... }
 
+function checkInitial()
+    if fs.isDir(".cpm.d") then
+        readPackageLists()
+        return 0
+    else
+        initConfDir()
+        checkInitial()
+        return 0
+    end
+end
+
+-- Initialize .cpm.d --
+function initConfDir()
+    if fs.exists(".cpm.d/plist") == false or fs.isDir(".cpm.d/plist") == true then
+        fs.delete(".cpm.d/plist")
+        fs.delete(".cpm.d/pvlist")
+    end
+end
+
+function readPackageLists()
+    print(tMsg.readPackageLists)
+    
+    local plist = fs.open(".cpm.d/plist", "r")
+    local pvlist = fs.open(".cpm.d/pvlist", "r")
+    
+    local buf = nil
+    local it = 1
+    
+    while true do
+        buf = plist.readLine()
+        
+        if buf == nil then
+            break
+        end
+        
+        tData.aPackageList[it] = buf
+        tData.aVersionList[it] = pvlist.readLine()
+        
+        it = it + 1
+    end
+    
+    buf = nil
+    local file = nil
+    it = 1
+    
+    local ls = fs.list(".cpm.d/install.d/")
+    
+    for k,v in pairs(ls) do
+        if v == nil then
+            break
+        end
+        
+        file = fs.open(".cpm.d/install.d/"..v, "r")
+        buf = file.readLine()
+        file.close()
+        
+        tData.installed.package[k] = v
+        tData.installed.version[k] = buf
+    end
+    
+    print(tMsg.done)
+end
+
+function findInstalledPackage(sPackage)
+    for k,v in pairs(tData.installed.package) do
+        if v == sPackage then
+            if tData.installed.version[k] ~= nil then
+                return tData.installed.version[k]
+            end
+        end
+    end
+    return nil
+end
+
+function findListedPackage(sPackage)
+    for k,v in pairs(tData.aPackageList) do
+        if v == sPackage then
+            if tData.aVersionList[k] ~= nil then
+                return tData.aVersionList[k]
+            end
+        end
+    end
+    return nil
+end
+
 function fetchArgs()
+    checkInitial()
+    
     if tArgs[1] == "update" then
-           tData.aPackageList,tData.aVersionList = cpmUpdate()
+           cpmUpdate()
     elseif tArgs[1] == "install" then
         if #tArgs < 2 then
             print(tMsg.usageMessage)
         end
-        if cpmInstall(tArgs[2]) ~= 1 then
+        local res = cpmInstall(tArgs[2])
+        if res == -1 then
             print(tMsg.generalError) 
         else
             print(tMsg.done)
@@ -118,7 +213,25 @@ function cpmUpdate()
                 end
                 tVersionList[k] = res.readLine()
             end
-            return tFileList,tVersionList
+            
+            local plist = fs.open(".cpm.d/plist", "w")
+            local pvlist = fs.open(".cpm.d/pvlist", "w")
+
+            local it = 0
+            
+            while true do
+                if tFileList[it] ~= nil then
+                    plist.writeLine(tFileList[it])
+                    pvlist.writeLine(tVersionList[it])
+                    
+                    print("OK " .. tFileList[it] .. " " tVersionList[it])
+                    
+                    it = it + 1
+                else
+                    break
+                end
+            end
+            readPackageLists()
         else
             print(tMsg.generalError)
         end
@@ -130,6 +243,21 @@ function cpmUpgrade()
 end
 
 function cpmInstall(sPackage)
+    readPackageLists()
+    
+    local version = findInstalledPackage(sPackage)
+    local pVersion = findListedPackage(sPackage)
+    
+    if pVersion == nil then
+        print(tMsg.packageNotFound)
+        return 0
+    end
+    
+    if version ~= nil and version == pVersion then
+        print(tMsg.packageUptodate)
+        return 0
+    end
+    
     -- Recursive dependency installation
     print(sPackage .. "/dependencies")
     
@@ -162,6 +290,11 @@ function cpmInstall(sPackage)
     file.close()
     
     print(tMsg.installedPackage .. sPackage)
+    
+    local pkgfile = fs.open(".cpm.d/install.d/" .. sPackage, "w")
+    
+    pkgfile.writeLine(pVersion)
+    pkgfile.close()
     
     return 1
 end
