@@ -2,10 +2,11 @@ The roadmap is only updated on the development branch.
 
 # 0.4
 * support for package configuration subdirs
-* cpm configuration in .../.cpm.d/
+* cpm configuration in .cpm.d/
 
 # 0.3
-* data directory at .../.cpm.d/ containing a list of installed packages and installed package versions
+* data directory at .cpm.d/install.d containing a list of installed packages and installed package versions
+* data files in .cpm.d/ containing the repository's package and version lists
 * version checking
 
 # 0.2.1:
