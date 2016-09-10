@@ -1,10 +1,10 @@
 Installation of cpm v0.1:
-> pastebin get Esehqdwn cpm
+    pastebin get Esehqdwn cpm
 
 Installation of the test script from the main repo (https://github.com/NexAdn/cpmcontent):
-> cpm install test
+    cpm install test
 
 Execute the test script:
-> test
+    test
 
 The script will slowly print "Hello World!" on the screen and then exit.
