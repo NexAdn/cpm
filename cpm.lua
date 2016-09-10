@@ -18,14 +18,14 @@
 -- User specific configuration
 local tConfig = {
 	-- Server URL to connect to
-	aPackageServer = "https://raw.githubusercontent.com",
+	sPackageServer = "https://raw.githubusercontent.com",
 	-- Path to main repository directory
 	sPackageDirectory = "/nexadn/cpmcontent/master"
 }
 
 -- Static configuration (DO NOT CHANGE)
 local tStatic = {
-    sVersion = "0.2",
+    sVersion = "0.2.1",
     
     sPackagesFile       = "/packages",
     sDependenciesFile   = "/dependencies",
@@ -37,7 +37,10 @@ local tMsg = {
 	usageMessage = "Syntax: cpm install [package]\n        cpm update\n        cpm cpmupdate",
     wrongURL = "Wrong URL",
     generalError = "Unkown error occured!",
-    updateSuccess = "Successfully updated CPM"
+    updateSuccess = "Successfully updated CPM",
+    installPackage = "Unpacking ",
+    installedPackage = "Unpacked ",
+    done = "Done"
 }
 
 local tData = {
@@ -56,6 +59,8 @@ function fetchArgs()
         end
         if cpmInstall(tArgs[2]) ~= 1 then
             print(tMsg.generalError) 
+        else
+            print(tMsg.done)
         end
     elseif tArgs[1] == "upgrade" then
         cpmUpgrade()
@@ -90,7 +95,7 @@ function checkURL(sURL)
 end
 
 function cpmUpdate()
-    local sListURL = tConfig.aPackageServer .. tConfig.sPackageDirectory .. tStatic.sPackagesFile
+    local sListURL = tConfig.sPackageServer .. tConfig.sPackageDirectory .. tStatic.sPackagesFile
     if checkURL(sListURL) then
         local tResPkglist = http.get(sListURL)
         if tResPkglist.getResponseCode() == 200 then
@@ -106,7 +111,7 @@ function cpmUpdate()
             end
             local tVersionList = {}
             for k,v in pairs(tFileList) do
-                local res = http.get(tConfig.aPackageServer .. tConfig.sPackageDirectory .. "/" .. v .. tStatic.sVersionFile)
+                local res = http.get(tConfig.sPackageServer .. tConfig.sPackageDirectory .. "/" .. v .. tStatic.sVersionFile)
                 if res.getResponseCode() ~= 200 then
                     print(tMsg.generalError)
                     return nil,nil
@@ -126,9 +131,13 @@ end
 
 function cpmInstall(sPackage)
     -- Recursive dependency installation
+    print(sPackage .. "/dependencies")
+    
     loadDependencies(sPackage)
     
-    local res = downloadFile(tConfig.aPackageServer .. tConfig.sPackageDirectory .. "/" .. sPackage .. tStatic.sMainLua)
+    print(sPackage .. "/main") 
+    
+    local res = downloadFile(tConfig.sPackageServer .. tConfig.sPackageDirectory .. "/" .. sPackage .. tStatic.sMainLua)
     
     if res == nil then
         print(tMsg.generalError)
@@ -138,6 +147,8 @@ function cpmInstall(sPackage)
     local file = fs.open(sPackage, "w")
     
     local buf = nil
+    
+    print(tMsg.installPackage .. sPackage .. "...")
     
     while true do
         buf = res.readLine()
@@ -150,6 +161,8 @@ function cpmInstall(sPackage)
     
     file.close()
     
+    print(tMsg.installedPackage .. sPackage)
+    
     return 1
 end
 
@@ -157,7 +170,7 @@ function downloadFile(sURL)
     if checkURL(sURL) then
         local res = http.get(sURL)
         
-        print(res.getResponseCode())
+        --print(res.getResponseCode())
         
         if res.getResponseCode() ~= 200 and res.getResponseCode() ~= 304 then
             return nil
@@ -170,7 +183,7 @@ function downloadFile(sURL)
 end
 
 function loadDependencies(sPackage)
-    local res = downloadFile( tConfig.aPackageServer .. tConfig.sPackageDirectory .. "/" .. sPackage .. tStatic.sDependenciesFile )
+    local res = downloadFile( tConfig.sPackageServer .. tConfig.sPackageDirectory .. "/" .. sPackage .. tStatic.sDependenciesFile )
     
     local buf = nil
     
