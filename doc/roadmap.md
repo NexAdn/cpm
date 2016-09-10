@@ -1,5 +1,9 @@
 The roadmap is only updated on the development branch.
 
+# 0.5
+* split cpm script to multiple apis and files
+* installer script for cpm
+
 # 0.4
 * support for package configuration subdirs
 * cpm configuration in .cpm.d/
@@ -9,12 +13,12 @@ The roadmap is only updated on the development branch.
 * data files in .cpm.d/ containing the repository's package and version lists
 * version checking
 
-# 0.2.1:
+# 0.2.1
 * console output
 
-# 0.2:
+# 0.2
 * dependency checking and automatic downloads
 * CPM updater from hardcoded URL (https://raw.githubusercontent.com/NexAdn/cpm/master/cpm.lua)
 
-# 0.1:
+# 0.1
 * simple download handler
