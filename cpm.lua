@@ -25,7 +25,7 @@ local tConfig = {
 
 -- Static configuration (DO NOT CHANGE)
 local tStatic = {
-    sVersion = "0.2",
+    sVersion = "0.2.1",
     
     sPackagesFile       = "/packages",
     sDependenciesFile   = "/dependencies",
