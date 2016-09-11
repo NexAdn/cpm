@@ -43,7 +43,9 @@ local tMsg = {
     done = "Done",
     packageNotFound = "Couldn't find package",
     packageUptodate = "Package already up-to-date",
-    readPackageLists = "Reading package lists..."
+    readPackageLists = "Reading package lists...",
+    updatePkgList = "Updating package lists...",
+    writePkgData = "Writing package data..."
 }
 
 local tData = {
@@ -100,6 +102,9 @@ function readPackageLists()
         
         it = it + 1
     end
+    
+    plist.close()
+    pvlist.close()
     
     buf = nil
     local file = nil
@@ -194,36 +199,46 @@ end
 
 function cpmUpdate()
     local sListURL = tConfig.sPackageServer .. tConfig.sPackageDirectory .. tStatic.sPackagesFile
+    print(tMsg.updatePkgList)
     if checkURL(sListURL) then
         local tResPkglist = http.get(sListURL)
         if tResPkglist.getResponseCode() == 200 then
             local tFileList = {}
+            local buf = nil
             local i = 0
             local cont = true
             while cont do
                 i = i + 1
-                tFileList[i] = tResPkglist.readLine()
-                if tFileList[i] == nil then
+                buf = tResPkglist.readLine()
+                if buf == nil then
                     cont = false
+                else
+                    tFileList[i] = buf
+                    --print(tFileList[i])
                 end
             end
+            
             local tVersionList = {}
             for k,v in pairs(tFileList) do
-                local res = http.get(tConfig.sPackageServer .. tConfig.sPackageDirectory .. "/" .. v .. tStatic.sVersionFile)
+                local res = http.get(tConfig.sPackageServer .. tConfig.sPackageDirectory .. "/" .. v ..  tStatic.sVersionFile)
+                --print(tConfig.sPackageServer .. tConfig.sPackageDirectory .. "/" .. v  ..  tStatic.sVersionFile)
                 if res.getResponseCode() ~= 200 then
                     print(tMsg.generalError)
                     return nil,nil
                 end
                 tVersionList[k] = res.readLine()
+                --print(tVersionList[k])
             end
             
             local plist = fs.open(".cpm.d/plist", "w")
             local pvlist = fs.open(".cpm.d/pvlist", "w")
 
-            local it = 0
+            local it = 1
             
+            print(tMsg.writePkgData)
             while true do
                 if tFileList[it] ~= nil then
+                    --print(tFileList[it])
                     plist.writeLine(tFileList[it])
                     pvlist.writeLine(tVersionList[it])
                     
@@ -234,10 +249,14 @@ function cpmUpdate()
                     break
                 end
             end
+            plist.close()
+            pvlist.close()
             readPackageLists()
         else
             print(tMsg.generalError)
         end
+    else
+        print(tMsg.wrongURL)
     end
 end
 
@@ -246,7 +265,6 @@ function cpmUpgrade()
 end
 
 function cpmInstall(sPackage)
-    readPackageLists()
     
     local version = findInstalledPackage(sPackage)
     local pVersion = findListedPackage(sPackage)
