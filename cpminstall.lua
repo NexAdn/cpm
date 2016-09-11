@@ -1,0 +1,1 @@
+wget https://raw.githubusercontent.com/NexAdn/cpm/master/cpm.lua cpm
