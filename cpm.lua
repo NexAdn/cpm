@@ -275,16 +275,16 @@ function cpmInstall(sPackage)
     end
     
     if version ~= nil and version == pVersion then
-        print(tMsg.packageUptodate)
+        print(sPackage .. " - " .. tMsg.packageUptodate)
         return 0
     end
     
     -- Recursive dependency installation
-    print(sPackage .. "/dependencies")
+    print(sPackage .. "/dependencies\n")
     
     loadDependencies(sPackage)
     
-    print(sPackage .. "/main") 
+    print(sPackage .. "/main\n") 
     
     local res = downloadFile(tConfig.sPackageServer .. tConfig.sPackageDirectory .. "/" .. sPackage .. tStatic.sMainLua)
     
